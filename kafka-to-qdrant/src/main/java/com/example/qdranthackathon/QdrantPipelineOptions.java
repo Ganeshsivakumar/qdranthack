@@ -44,4 +44,8 @@ public interface QdrantPipelineOptions extends PipelineOptions {
 
     void setQdrantApiKey(String apikey);
 
+    String getCollectionName();
+
+    void setCollectionName(String name);
+
 }

@@ -3,6 +3,7 @@ package com.example.qdranthackathon;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.kafka.KafkaIO;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.Values;
 import org.apache.beam.sdk.transforms.windowing.AfterProcessingTime;
 import org.apache.beam.sdk.transforms.windowing.AfterWatermark;
@@ -56,6 +57,11 @@ public class KafkaToQdrant {
                         .withAllowedLateness(Duration.standardMinutes(5))
                         .accumulatingFiredPanes())
                 .apply("Extract Values", Values.<String>create())
-                .apply("Embed text", LangchainBeamEmbedding.embed(handler));
+                .apply("Embed text", LangchainBeamEmbedding.embed(handler))
+                .apply("write to qdrant", ParDo.of(
+                        new QdrantFn(options.getQdrantHost(), options.getQdrantApiKey(),
+                                options.getCollectionName())));
+
+        p.run();
     }
 }
