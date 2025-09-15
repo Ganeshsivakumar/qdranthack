@@ -96,3 +96,8 @@ This command will submit the pipeline as a job to the cluster and start the pipe
 - `qdrantApiKey` - Qdrant api key for authentication.
 
 
+
+## Demo Video
+
+
+watch it directly on [Loom](https://www.loom.com/share/708b9a903ee3434799d86688e080fc37?sid=0e6b4d98-9133-4881-87a2-8c47a6e20294)

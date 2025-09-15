@@ -28,6 +28,8 @@ public class QdrantFn extends DoFn<EmbeddingOutput, Void> {
         this.collectionName = collectionName;
     }
 
+    // setup method called once during instantiation
+    // and client is created
     @Setup
     public void setup() {
 
@@ -43,6 +45,8 @@ public class QdrantFn extends DoFn<EmbeddingOutput, Void> {
                         .build());
     }
 
+    // for every message, processElement is called
+    // and messages are inserted into qdrant db using client
     @ProcessElement
     public void processElement(ProcessContext c) {
 

@@ -22,11 +22,14 @@ public class KafkaToQdrant {
 
     public static void main(String[] args) {
 
+        // pipeline options, takes values provided via cli
         QdrantPipelineOptions options = PipelineOptionsFactory.fromArgs(args).withValidation()
                 .as(QdrantPipelineOptions.class);
 
+        // creates beam pipeline
         Pipeline p = Pipeline.create(options);
 
+        // embedding model options
         EmbeddingModelOptions modelOptions = OpenAiEmbeddingModelOptions.builder()
                 .modelName(options.getEmbeddingModel())
                 .apikey(options.getOpenaiApiKey())
@@ -34,7 +37,8 @@ public class KafkaToQdrant {
 
         EmbeddingModelHandler handler = new EmbeddingModelHandler(modelOptions);
 
-        p.apply("Read from Kafka", KafkaIO.<String, String>read()
+        // add pipeline stages
+        p.apply("Read from Kafka", KafkaIO.<String, String>read() // read from kafka
                 .withBootstrapServers(options.getBrokers())
                 .withTopic(options.getTopic())
                 .withKeyDeserializer(StringDeserializer.class)
@@ -55,12 +59,12 @@ public class KafkaToQdrant {
                                                         .standardSeconds(
                                                                 10))))
                         .withAllowedLateness(Duration.standardMinutes(5))
-                        .accumulatingFiredPanes())
-                .apply("Extract Values", Values.<String>create())
+                        .accumulatingFiredPanes()) // group records
+                .apply("Extract Values", Values.<String>create()) // extract kafka value records
                 .apply("Embed text", LangchainBeamEmbedding.embed(handler))
                 .apply("write to qdrant", ParDo.of(
                         new QdrantFn(options.getQdrantHost(), options.getQdrantApiKey(),
-                                options.getCollectionName())));
+                                options.getCollectionName()))); // write to qdrant
 
         p.run();
     }

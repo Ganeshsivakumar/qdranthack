@@ -2,6 +2,7 @@ package com.example.qdranthackathon;
 
 import org.apache.beam.sdk.options.PipelineOptions;
 
+// pipeline options interface
 public interface QdrantPipelineOptions extends PipelineOptions {
 
     String getBrokers();
